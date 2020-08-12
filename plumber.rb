@@ -15,10 +15,18 @@ class Plumber < Formula
     else
       ohdie "Architecture not supported by this formula"
     end
+  else
+    ohdie "Unsupported OS"
   end
 
   def install
-    bin.install "plumber"
+    if OS.mac?
+      bin.install "plumber-darwin" => "plumber"
+    elsif OS.linux?
+      bin.install "plumber-linux" => "plumber"
+    else
+      ohdie "Unsupported OS"
+    end
   end
 
   test do
