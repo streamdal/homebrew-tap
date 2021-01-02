@@ -4,14 +4,14 @@ class Plumber < Formula
   license "MIT"
 
   if OS.mac?
-    url "https://github.com/batchcorp/plumber/releases/download/v0.8.0/plumber-darwin"
-    sha256 "83d407998a8884e1612bfd716e9867d81f0780c512621c76497cc0e7d345afd0"
+    url "https://github.com/batchcorp/plumber/releases/download/v0.8.1/plumber-darwin"
+    sha256 "fc66b2d4e09c348ecd901d4008bf2b4511af002aef3190fba88233e3b8f92f9f"
   elsif OS.linux?
 
     case RbConfig::CONFIG["host_cpu"]
     when "x86_64"
-      url "https://github.com/batchcorp/plumber/releases/download/v0.8.0/plumber-linux"
-      sha256 "745fec2d01e339b6ccce7705d2b43a20f01a7b6af3455ebd01205dd4cb1ab4de"
+      url "https://github.com/batchcorp/plumber/releases/download/v0.8.1/plumber-linux"
+      sha256 "b0ee968dc09c8ee4a2863da84ad28c145f40d3c64bfdcf854e195a8196dc9c85"
     else
       ohdie "Architecture not supported by this formula"
     end
