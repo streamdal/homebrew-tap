@@ -4,14 +4,19 @@ class Plumber < Formula
   license "MIT"
 
   if OS.mac?
-    url "https://github.com/batchcorp/plumber/releases/download/v1.6.1/plumber-darwin"
-    sha256 "2018673554317bc0df2a83c5e88aad37306e23fe1e03e52ff9c59321cafda226"
+    case RbConfig::CONFIG["host_cpu"]
+    when "arm64"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.7.0/plumber-darwin-arm64"
+      sha256 "37ba2a71633f484d88205d9165f2a0aa5fc79b6e673ab13e7c56ebac2b12fbd2"
+    else
+      url "https://github.com/batchcorp/plumber/releases/download/v1.7.0/plumber-darwin"
+      sha256 "a02e864fe20609cca8180069658b6038b3f54ff9df86fbeb2a67f761a7075208"
+    end
   elsif OS.linux?
-
     case RbConfig::CONFIG["host_cpu"]
     when "x86_64"
-      url "https://github.com/batchcorp/plumber/releases/download/v1.6.1/plumber-linux"
-      sha256 "421dc2445bc0a3ce4c319598d0a4c5c95adb1e64f429c3c9a504c3122e9a4a65"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.7.0/plumber-linux"
+      sha256 "4f98eb63617a415a36f89aee63235c86d7fe76607be06a8dcc27a5d1b1c35bb5"
     else
       ohdie "Architecture not supported by this formula"
     end
@@ -21,7 +26,12 @@ class Plumber < Formula
 
   def install
     if OS.mac?
-      bin.install "plumber-darwin" => "plumber"
+      case RbConfig::CONFIG["host_cpu"]
+      when "arm64"
+        bin.install "plumber-darwin-arm64" => "plumber"
+      else
+        bin.install "plumber-darwin" => "plumber"
+      end
     elsif OS.linux?
       bin.install "plumber-linux" => "plumber"
     else
