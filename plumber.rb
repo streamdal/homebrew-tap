@@ -7,17 +7,17 @@ class Plumber < Formula
   if OS.mac?
     case RbConfig::CONFIG["host_cpu"]
     when "arm64"
-      url "https://github.com/batchcorp/plumber/releases/download/v1.7.1/plumber-darwin-arm64"
-      sha256 "2471d66995416b166ee9810ee09a319d54cafb40a607c465ac73c9c8bcdae9c6"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.8.0/plumber-darwin-arm64"
+      sha256 "36076d0ee64776943513daffbcc627a6c3c8abf94d625798bae516dabac9c97a"
     else
-      url "https://github.com/batchcorp/plumber/releases/download/v1.7.1/plumber-darwin"
-      sha256 "d61dd5296edb47909812621a6c669299b81b510212bcf0d3600969951a32246f"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.8.0/plumber-darwin"
+      sha256 "ab2291896a5577e245f225ee2bfc7b2c2a65b01d56856acd0ff03c8fee44f544"
     end
   elsif OS.linux?
     case RbConfig::CONFIG["host_cpu"]
     when "x86_64"
-      url "https://github.com/batchcorp/plumber/releases/download/v1.7.1/plumber-linux"
-      sha256 "e6d07c69f3330bba113dc7be4fb2e1ccf34a388771e5802833b4c0303873a07f"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.8.0/plumber-linux"
+      sha256 "384dde7b3245c9235b9fc6d0858ed3696b885205b88c02ff1dc803fdd7b27d42"
     else
       ohdie "Architecture not supported by this formula"
     end
