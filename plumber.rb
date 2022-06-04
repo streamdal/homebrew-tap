@@ -3,7 +3,6 @@ class Plumber < Formula
   homepage "https://github.com/batchcorp/plumber"
   license "MIT"
 
-  OS.Architecture
   if OS.mac?
     case RbConfig::CONFIG["host_cpu"]
     when "arm64"
