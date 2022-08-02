@@ -5,18 +5,18 @@ class Plumber < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/batchcorp/plumber/releases/download/v1.10.3/plumber-darwin-arm64"
-      sha256 "f1eeaa935265a8e1e76b5a7c0d0f90713fc3e5c66ed31ff5e674e95b199ea480"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.10.4/plumber-darwin-arm64"
+      sha256 "ff698b9276c3ad8a86dcd6afd3580a2eb1c472b256eeeb176885f1dc49c364ab"
     else
-      url "https://github.com/batchcorp/plumber/releases/download/v1.10.3/plumber-darwin"
-      sha256 "8b346b7d14b9132045f1b97023225e396a7ef206f68426d5bb7445826bafc677"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.10.4/plumber-darwin"
+      sha256 "00e8cf96e8703b8822f631d170a07f7c2c9fe8c11333c646bb010ffb38f90838"
     end
   end
 
   on_linux do
     if Hardware::CPU::intel?
-      url "https://github.com/batchcorp/plumber/releases/download/v1.10.3/plumber-linux"
-      sha256 "55a364e7cdc9903ee5b81a490c6d736ee0a98955285eedfb8412e976efd8d801"
+      url "https://github.com/batchcorp/plumber/releases/download/v1.10.4/plumber-linux"
+      sha256 "92c4497733cadb7fce883fa69a0be67166c7a20612915bfd8ee4c882c3adc236"
     else
       ohdie "Unsupported CPU architecture"
     end
