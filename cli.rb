@@ -1,4 +1,4 @@
-class Streamdal < Formula
+class Cli < Formula
   desc "Streamdal's CLI tool"
   homepage "https://github.com/streamdal/cli"
   license "Apache-2.0"
@@ -25,18 +25,18 @@ class Streamdal < Formula
   def install
     on_macos do
       if Hardware::CPU.arm?
-        bin.install "streamdal-darwin-arm64" => "streamdal"
+        bin.install "streamdal-darwin-arm64" => "streamdal-cli"
       else
-        bin.install "streamdal-darwin" => "streamdal"
+        bin.install "streamdal-darwin" => "streamdal-cli"
       end
     end
 
     on_linux do
-      bin.install "streamdal-linux" => "streamdal"
+      bin.install "streamdal-linux" => "streamdal-cli"
     end
   end
 
   test do
-    system "#{bin}/streamdal --usage"
+    system "#{bin}/streamdal-cli --usage"
   end
 end

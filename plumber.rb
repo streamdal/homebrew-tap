@@ -1,5 +1,5 @@
 class Plumber < Formula
-  desc "A swiss army knife Streamdal tool for interacting with Kafka, RabbitMQ and other messaging systems."
+  desc "A swiss army knife Cli tool for interacting with Kafka, RabbitMQ and other messaging systems."
   homepage "https://github.com/streamdal/plumber"
   license "MIT"
 
