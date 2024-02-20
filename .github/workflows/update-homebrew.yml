@@ -21,17 +21,17 @@ jobs:
         run: sudo apt-get update && sudo apt-get install jq curl
 
       - name: Fetch Latest CLI Release Version
-        id: latest_version
+        id: latest_release
         run: |
-          LATEST_VERSION=$(gh api repos/streamdal/streamdal/releases | jq -r '.[] | select(.tag_name | startswith("apps/cli")) | .tag_name' | head -1 | cut -d '/' -f 3)
-          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+          LATEST_RELEASE=$(gh api repos/streamdal/streamdal/releases | jq -r '.[] | select(.tag_name | startswith("apps/cli")) | .tag_name' | head -1 | cut -d '/' -f 3)
+          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
         env:
            GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Fetch Asset Download URLs and Names
         id: asset_info
         run: |
-          ASSET_JSON=$(gh api repos/streamdal/streamdal/releases/tags/apps/cli/$LATEST_VERSION | jq -r '.assets[] | {name, browser_download_url}')
+          ASSET_JSON=$(gh api repos/streamdal/streamdal/releases | jq -r --arg LATEST_RELEASE "$LATEST_RELEASE" '.[] | select(.tag_name == $LATEST_RELEASE) | .assets[] | {name, browser_download_url}')
           echo "ASSET_JSON=$ASSET_JSON" >> $GITHUB_ENV
         env:
            GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -55,7 +55,7 @@ jobs:
           git config user.name 'GitHub Actions'
           git config user.email 'actions@github.com'
           git add cli.rb
-          git commit -m "Update CLI formula to version $LATEST_VERSION"
+          git commit -m "Update CLI formula to version $LATEST_RELEASE"
           git push
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
