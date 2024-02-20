@@ -1,0 +1,35 @@
+name: Update Homebrew Formula with Latest CLI Version
+
+on:
+  repository_dispatch:
+    types: [update-homebrew-tap]
+
+jobs:
+  update-homebrew-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up GitHub CLI
+        run: |
+          echo "PERSONAL_ACCESS_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Fetch Latest CLI Release Version
+        run: |
+          VERSION=$(gh api repos/streamdal/streamdal/releases | jq -r '.[] | select(.tag_name | startswith("apps/cli")) | .tag_name' | head -1 | cut -d '/' -f 3)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update Homebrew Formula
+        run: |
+          sed -i "s|url \".*\/releases\/download\/.*\/cli.tar.gz\"|url \"https://github.com/streamdal/streamdal/releases/download/apps/cli/${{ env.VERSION }}/cli.tar.gz\"|g" cli.rb
+          git config user.name 'GitHub Actions'
+          git config user.email 'actions@github.com'
+          git add cli.rb
+          git commit -m "Automatically update CLI to ${{ env.VERSION }}"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
