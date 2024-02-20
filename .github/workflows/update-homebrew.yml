@@ -29,6 +29,8 @@ jobs:
           # Extracting URLs and names for all assets
           ASSETS=$(gh api repos/streamdal/streamdal/releases | jq -r --arg LATEST_RELEASE "$LATEST_RELEASE" '.[] | select(.tag_name == $LATEST_RELEASE) | .assets[] | {name, browser_download_url} | @base64')
           echo "::set-output name=assets::$ASSETS"
+        env:
+           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Update cli.rb with the Latest URLs and sha256 Checksums
         run: |
