@@ -1,35 +1,62 @@
-name: Update Homebrew Formula with Latest CLI Version
+name: Update Homebrew Formula with Latest CLI Version and Checksums
 
+#on:
+#  workflow_dispatch:
 on:
-  repository_dispatch:
-    types: [update-homebrew-tap]
+  push:
+    branches:
+      - test-branch
+
 
 jobs:
-  update-homebrew-formula:
+  update-formula:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout Homebrew Tap Repository
         uses: actions/checkout@v2
+        with:
+          repository: 'streamdal/homebrew-tap'
+          path: 'homebrew-tap'
+      
+      - name: Setup jq and curl
+        run: sudo apt-get update && sudo apt-get install jq curl
 
-      - name: Set up GitHub CLI
+      - name: Fetch Latest CLI Release Version and Asset URLs
+        id: fetch_info
         run: |
-          echo "PERSONAL_ACCESS_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV
+          LATEST_RELEASE=$(gh api repos/streamdal/streamdal/releases | jq -r '.[] | select(.tag_name | startswith("apps/cli")) | .tag_name' | head -1)
+          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
+          # Extracting URLs and names for all assets
+          ASSETS=$(gh api repos/streamdal/streamdal/releases | jq -r --arg LATEST_RELEASE "$LATEST_RELEASE" '.[] | select(.tag_name == $LATEST_RELEASE) | .assets[] | {name, browser_download_url} | @base64')
+          echo "::set-output name=assets::$ASSETS"
 
-      - name: Install jq
-        run: sudo apt-get install jq
-
-      - name: Fetch Latest CLI Release Version
+      - name: Update cli.rb with the Latest URLs and sha256 Checksums
         run: |
-          VERSION=$(gh api repos/streamdal/streamdal/releases | jq -r '.[] | select(.tag_name | startswith("apps/cli")) | .tag_name' | head -1 | cut -d '/' -f 3)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          for asset in ${{ steps.fetch_info.outputs.assets }}; do
+            asset=$(echo $asset | base64 --decode)
+            NAME=$(echo $asset | jq -r '.name')
+            URL=$(echo $asset | jq -r '.browser_download_url')
+            SHA256=$(curl -Ls $URL | shasum -a 256 | awk '{print $1}')
+            
+            # Update URL and sha256 for each platform in cli.rb
+            # Note: This assumes your formula and asset names follow a consistent naming convention
+            sed -i "s|url \".*${NAME}\"|url \"${URL}\"|g" homebrew-tap/cli.rb
+            sed -i "s|sha256 \".*\" # ${NAME}|sha256 \"${SHA256}\" # ${NAME}|g" homebrew-tap/cli.rb
+            
+            echo "Updated ${NAME} to ${LATEST_RELEASE} with sha256 ${SHA256}"
+          done
 
-      - name: Update Homebrew Formula
+      - name: Commit and Push Changes
         run: |
-          sed -i "s|url \".*\/releases\/download\/.*\/cli.tar.gz\"|url \"https://github.com/streamdal/streamdal/releases/download/apps/cli/${{ env.VERSION }}/cli.tar.gz\"|g" cli.rb
+          cd homebrew-tap
           git config user.name 'GitHub Actions'
           git config user.email 'actions@github.com'
           git add cli.rb
-          git commit -m "Automatically update CLI to ${{ env.VERSION }}"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update CLI formula to $LATEST_RELEASE"
+            git push
+          fi
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
