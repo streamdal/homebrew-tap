@@ -34,18 +34,28 @@ jobs:
 
       - name: Update cli.rb with the Latest URLs and sha256 Checksums
         run: |
-          for asset in ${{ steps.fetch_info.outputs.assets }}; do
-            asset=$(echo $asset | base64 --decode)
-            NAME=$(echo $asset | jq -r '.name')
-            URL=$(echo $asset | jq -r '.browser_download_url')
-            SHA256=$(curl -Ls $URL | shasum -a 256 | awk '{print $1}')
-            
+          # Define the expected asset names according to your naming convention
+          declare -A ASSET_NAMES=(
+            ["darwin-arm64"]="streamdal-darwin-arm64"
+            ["darwin-amd64"]="streamdal-darwin"
+            ["linux-amd64"]="streamdal-linux"
+          )
+
+          # Update the version in cli.rb
+          sed -i "s|apps%2Fcli%2Fv[0-9.]*|apps%2Fcli%2Fv${LATEST_RELEASE#apps/cli/}|g" homebrew-tap/cli.rb
+
+          for ARCH in "${!ASSET_NAMES[@]}"; do
+            ASSET_NAME=${ASSET_NAMES[$ARCH]}
+            # Fetch the asset URL using GitHub CLI and jq
+            ASSET_URL=$(gh api repos/streamdal/streamdal/releases | jq -r --arg ASSET_NAME "$ASSET_NAME" --arg LATEST_RELEASE "$LATEST_RELEASE" '.[] | select(.tag_name == $LATEST_RELEASE) | .assets[] | select(.name == $ASSET_NAME) | .browser_download_url')
+            # Download the asset and calculate its sha256
+            SHA256=$(curl -Ls $ASSET_URL | shasum -a 256 | awk '{print $1}')
+
             # Update URL and sha256 for each platform in cli.rb
-            # Note: This assumes your formula and asset names follow a consistent naming convention
-            sed -i "s|url \".*${NAME}\"|url \"${URL}\"|g" homebrew-tap/cli.rb
-            sed -i "s|sha256 \".*\" # ${NAME}|sha256 \"${SHA256}\" # ${NAME}|g" homebrew-tap/cli.rb
-            
-            echo "Updated ${NAME} to ${LATEST_RELEASE} with sha256 ${SHA256}"
+            sed -i "s|url \".*\/$ASSET_NAME\"|url \"$ASSET_URL\"|g" homebrew-tap/cli.rb
+            sed -i "s|sha256 \".*\" # $ARCH|sha256 \"$SHA256\" # $ARCH|g" homebrew-tap/cli.rb
+
+            echo "Updated $ARCH to $LATEST_RELEASE with sha256 $SHA256"
           done
 
       - name: Commit and Push Changes
