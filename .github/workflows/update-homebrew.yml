@@ -20,16 +20,16 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests jinja2
+          pip install -r requirements.txt
 
-      - name: Run Update Script
-        run: python update_formula.py
+
+      - name: Execute script
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          FORMULA_PATH: 'homebrew-tap/cli.rb'
+        run: python template/helper.py
 
       - name: Commit and Push Changes
         run: |
