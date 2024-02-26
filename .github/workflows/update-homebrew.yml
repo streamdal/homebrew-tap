@@ -1,0 +1,42 @@
+name: Update Homebrew Formula with Latest CLI Version and Checksums
+
+on:
+  repository_dispatch:
+    types: [update-homebrew-tap]
+
+jobs:
+  update-homebrew-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Homebrew Tap Repository
+        uses: actions/checkout@v2
+        with:
+          repository: 'streamdal/homebrew-tap'
+          path: 'homebrew-tap'
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r homebrew-tap/template/requirments.txt
+
+
+      - name: Execute script
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: python homebrew-tap/template/helper.py
+
+      - name: Commit and Push Changes
+        run: |
+          cd homebrew-tap
+          git config user.name 'GitHub Actions'
+          git config user.email 'actions@github.com'
+          git add cli.rb
+          git commit -m "Update CLI formula to version $LATEST_RELEASE"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
