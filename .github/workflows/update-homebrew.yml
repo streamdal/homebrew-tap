@@ -1,7 +1,5 @@
 name: Update Homebrew Formula with Latest CLI Version and Checksums
 
-#on:
-#  workflow_dispatch:
 on:
   push:
     branches:
@@ -17,37 +15,21 @@ jobs:
           repository: 'streamdal/homebrew-tap'
           path: 'homebrew-tap'
 
-      - name: Setup jq and curl
-        run: sudo apt-get update && sudo apt-get install jq curl
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-      - name: Fetch Latest CLI Release Version
-        id: latest_release
+      - name: Install Dependencies
         run: |
-          LATEST_RELEASE=$(gh api repos/streamdal/streamdal/releases | jq -r '.[] | select(.tag_name | startswith("apps/cli")) | .tag_name' | head -1 | cut -d '/' -f 3)
-          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
+          python -m pip install --upgrade pip
+          pip install requests jinja2
+
+      - name: Run Update Script
+        run: python update_formula.py
         env:
-           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Fetch Asset Download URLs and Names
-        id: asset_info
-        run: |
-          ASSET_JSON=$(gh api repos/streamdal/streamdal/releases | jq -r --arg LATEST_RELEASE "$LATEST_RELEASE" '.[] | select(.tag_name == $LATEST_RELEASE) | .assets[] | {name, browser_download_url}')
-          echo "ASSET_JSON=$ASSET_JSON" >> $GITHUB_ENV
-        env:
-           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Update cli.rb with the New Download URLs and Checksums
-        run: |
-          for asset in $(echo $ASSET_JSON | jq -r '.name'); do
-            DOWNLOAD_URL=$(echo $ASSET_JSON | jq -r --arg name "$asset" '. | select(.name==$name) | .browser_download_url')
-            SHA256=$(curl -Ls $DOWNLOAD_URL | shasum -a 256 | awk '{print $1}')
-            
-            # Update URL and sha256 in cli.rb
-            sed -i "s|url \".*${asset}\"|url \"$DOWNLOAD_URL\"|g" homebrew-tap/cli.rb
-            sed -i "s|sha256 \".*\" # ${asset}|sha256 \"$SHA256\" # ${asset}|g" homebrew-tap/cli.rb
-            
-            echo "Updated asset $asset with sha256 $SHA256"
-          done
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          FORMULA_PATH: 'homebrew-tap/cli.rb'
 
       - name: Commit and Push Changes
         run: |
