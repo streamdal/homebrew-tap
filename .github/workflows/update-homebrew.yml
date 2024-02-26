@@ -1,9 +1,8 @@
 name: Update Homebrew Formula with Latest CLI Version and Checksums
 
 on:
-  push:
-    branches:
-      - test-branch
+  repository_dispatch:
+    types: [update-homebrew-tap]
 
 jobs:
   update-homebrew-formula:
