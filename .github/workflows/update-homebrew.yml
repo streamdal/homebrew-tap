@@ -23,13 +23,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r template/requirments.txt
+          pip install -r homebrew-tap/template/requirments.txt
 
 
       - name: Execute script
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: python template/helper.py
+        run: python homebrew-tap/template/helper.py
 
       - name: Commit and Push Changes
         run: |
