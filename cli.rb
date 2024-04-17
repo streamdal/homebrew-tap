@@ -6,18 +6,18 @@ class Cli < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/streamdal/streamdal/releases/download/apps/cli/v0.0.4/streamdal-darwin-arm64"
-      sha256 "97d32778646b6e70e64dd17861588936fff3b9833f2076373d3805b6935b18be"
+      url "https://github.com/streamdal/streamdal/releases/download/apps/cli/v0.0.6/streamdal-darwin-arm64"
+      sha256 "c0a0270b3afd873c8f95efddd84c14a925861235647e1177fd915bdce6167c20"
     else
-      url "https://github.com/streamdal/streamdal/releases/download/apps/cli/v0.0.4/streamdal-darwin"
-      sha256 "4a983d74af4d83be200cb7d891bf2cf0d8b7a9109674d1b11c7f7e36ab5141b4"
+      url "https://github.com/streamdal/streamdal/releases/download/apps/cli/v0.0.6/streamdal-darwin"
+      sha256 "0ea75542fd3084035a73cdb6ce798f0050e190a4804c4a2cc4bafda3d5ad515d"
     end
   end
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/streamdal/streamdal/releases/download/apps/cli/v0.0.4/streamdal-linux"
-      sha256 "b54f71e3198b24bee4d989d681391f24289e60353ca4dfa1e7a199101b1235ca"
+      url "https://github.com/streamdal/streamdal/releases/download/apps/cli/v0.0.6/streamdal-linux"
+      sha256 "a82cd6fb98eb7591131a8f7112912a6df604f04df701bf2ebeca88af8e264326"
     else
       ohdie "Unsupported CPU architecture"
     end
