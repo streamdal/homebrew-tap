@@ -5,18 +5,18 @@ class Plumber < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/streamdal/plumber/releases/download/v2.6.0/plumber-darwin-arm64"
-      sha256 "7c37fabf8adf536f7ba461f78f512821a9b2e74c4148dcc5c0e865ab9381bb28"
+      url "https://github.com/streamdal/plumber/releases/download/v2.7.1/plumber-darwin-arm64"
+      sha256 "96463c9e459c83cdff98fcc358730fea243d07723af17322f3187daafc3dbe79"
     else
-      url "https://github.com/streamdal/plumber/releases/download/v2.6.0/plumber-darwin"
-      sha256 "a8357959bd7bcc89b10f8d8e2902d4cfd090f2aa73b378c91a64f8d7bf0f6303"
+      url "https://github.com/streamdal/plumber/releases/download/v2.7.1/plumber-darwin"
+      sha256 "e336c972f0b8930eb6fc3656ee6b0f9980c438d6ba558fc2a51bdb2320f61453"
     end
   end
 
   on_linux do
     if Hardware::CPU::intel?
-      url "https://github.com/streamdal/plumber/releases/download/v2.6.0/plumber-linux"
-      sha256 "7ae233d696019e6af10617ee2aec4effdbb6377711be22590b614a3036191ea4"
+      url "https://github.com/streamdal/plumber/releases/download/v2.7.1/plumber-linux"
+      sha256 "e0e36552d96646c8bdc8a58d93b8e4fa50134b550635c696769faca5f7d499a2"
     else
       ohdie "Unsupported CPU architecture"
     end
